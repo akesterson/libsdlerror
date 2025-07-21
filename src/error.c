@@ -1,4 +1,4 @@
-#include "error.h"
+#include "sdlerror.h"
 #include "stdlib.h"
 
 ErrorContext __error_last_ditch;

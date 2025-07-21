@@ -1,5 +1,13 @@
 WIP : This file was written by AI. It needs to be cleaned by a human who actually understands the library (me).
 
+```
+cmake -S . -B build
+cd build
+make
+make install
+```
+
+
 This README file is intended to serve as a guide for developers of this C library. The purpose of the library is to provide TRY/CATCH style error handling in C programs, while also capturing stack traces and context information for debugging purposes. The following steps describe how you can use this library:
 
 1. Include the necessary headers: `error.h` and `stdlib.h`.
