@@ -27,7 +27,7 @@ You do not need to know how the library works underneath the covers in order to 
 
 This library can perform tests on any function or expression that returns an integer value.
 
-Any function which uses the `ATTEMPT` macro should have a return type of `ErrorContext *`. The macros within this library, when they detect an unhandled error, will attempt to pass up the unhandled error to the context of the previous function in the call stack. This allows for errors to propagate up through the call stack in the same way as exceptions. (For example, if you use traditional C error handling in a call stack of `a() -> b() -> c()`, and `c()` fails because it runs out of memory, `b()` will likely detect that error and return some error to `a()`, but it may or may not return the context of what failed and why. With this, you get that context all the way up in `a()` without knowing anything about `c()`.
+Any function which uses the `PREPARE_ERROR` macro should have a return type of `ErrorContext *`. The macros within this library, when they detect an unhandled error, will attempt to pass up the unhandled error to the context of the previous function in the call stack. This allows for errors to propagate up through the call stack in the same way as exceptions. (For example, if you use traditional C error handling in a call stack of `a() -> b() -> c()`, and `c()` fails because it runs out of memory, `b()` will likely detect that error and return some error to `a()`, but it may or may not return the context of what failed and why. With this, you get that context all the way up in `a()` without knowing anything about `c()`.
 
 # Error codes
 
