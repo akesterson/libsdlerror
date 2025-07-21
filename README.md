@@ -19,6 +19,8 @@ make install
 
 This library does not actually implement true exception handling; rather, it sets up a useful simulacrum of exception handling using macros wrapped around the return codes of functions. There is no `setjmp`/`longjmp` hackery here.
 
+This library never performs any dynamic memory allocation, ever. A maximum of 128 ErrorContexts can be utilized at the same time.
+
 You do not need to know how the library works underneath the covers in order to use it. There is one datastructure, a few utility functions, and a bunch of macros. All you need to know is about 10 macros.
 
 # Functions and Return Codes
