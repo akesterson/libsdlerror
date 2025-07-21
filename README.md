@@ -187,3 +187,30 @@ PREPARE_ERROR(errctx);
 FAIL_NONZERO_RETURN(errctx, strcmp("not", "equal"), ERR_VALUE, "Strings are not equal")
 ```
 
+# Uncaught errors and stack traces
+
+Whenever an error is captured using the `FAIL_*` or `CATCH` methods, and is unhandled such that it manages to propagate all the way to the top of the caller stack without being managed, the last `FINISH` macro to touch the error will trigger a stack trace and kill the program.
+
+Consider the `tests/err_trace.c` program which intentionally triggers this behavior. It produces output like this:
+
+```
+tests/err_trace.c:func2:7: 1 (Null Pointer Error) : This is a failure in func2
+tests/err_trace.c:func2:10
+tests/err_trace.c:func1:18: Detected error 0 from heap (refcount 1)
+tests/err_trace.c:func1:18
+tests/err_trace.c:func1:21
+tests/err_trace.c:main:30: Detected error 0 from heap (refcount 1)
+tests/err_trace.c:main:30
+tests/err_trace.c:main:33: Unhandled Error 1 (Null Pointer Error): This is a failure in func2
+```
+
+From bottom to top, we have:
+
+* The last line printed is the `FINISH` macro call that triggered the stacktrace. 
+* Above that, the `CATCH()` inside of `main()` which caught the exception from `func1()` but did not handle it
+* Above that, a statement that the error was detected in the `CATCH()` statement at the same line
+* Above that, the `FINISH()` macro in the `func1` method which detected the presence of an unhandled error and returned it up the calling stack
+* Above that, the `CATCH()` macro in the `func1` method which caught the error coming out of `func2()`
+* Above that, a statement that the error was detected in the `CATCH()` statement at the same line
+* Above that, the `FINISH()` macro in `func2()` which detected an unhandled error and passed it out of the function
+* Above that, a reference to the line where the `FAIL()` macro set the error code and provided the message which is printed here
