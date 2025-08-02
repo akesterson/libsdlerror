@@ -34,7 +34,7 @@ Any function which uses the `PREPARE_ERROR` macro should have a return type of `
 
 # Error codes
 
-The library uses integer values to specify error codes inside of its context. These integer return codes are defined in `error.h` in the form of `ERR_xxxxx` where `xxxxx` is the name of the error code in question. See `error.h` for a list of defined errors and their descriptions. 
+The library uses integer values to specify error codes inside of its context. These integer return codes are defined in `sdlerror.h` in the form of `ERR_xxxxx` where `xxxxx` is the name of the error code in question. See `sdlerror.h` for a list of defined errors and their descriptions. 
 
 You can define additional error types by defining additional `ERR_xxxxx` values. Begin your error values at 128. Define a human-friendly name for the error with the `error_name_for_status` method:
 
