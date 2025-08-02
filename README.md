@@ -17,11 +17,14 @@ make install
 
 # Philosophy of Use
 
-This library does not actually implement true exception handling; rather, it sets up a useful simulacrum of exception handling using macros wrapped around the return codes of functions. There is no `setjmp`/`longjmp` hackery here.
+This library has 6 guiding principles:
 
-This library never performs any dynamic memory allocation, ever. A maximum of 128 ErrorContexts can be utilized at the same time.
-
-You do not need to know how the library works underneath the covers in order to use it. There is one datastructure, a few utility functions, and a bunch of macros. All you need to know is about 10 macros.
+* Manually checking every possible return code for every possible meaning of that return code is tedious and prone to miss unpredicted failure cases
+* Functions should detect errors, declare them, and pass them back to their caller
+* Uncaught errors should cause program termination with a stacktrace
+* Dynamic memory allocation is the source of many errors and should be avoided if possible
+* Manipulating the call stack directly is error prone and dangerous
+* Declaring, capturing, and reacting to errors should be intuitive and no more difficult than managing return codes
 
 # Functions and Return Codes
 
@@ -187,7 +190,21 @@ PREPARE_ERROR(errctx);
 FAIL_NONZERO_RETURN(errctx, strcmp("not", "equal"), ERR_VALUE, "Strings are not equal")
 ```
 
-# Uncaught errors and stack traces
+# Uncaught errors
+
+## Ensuring that all error codes are captured
+
+Any function which returns `ErrorContext *` should also be marked with `ERROR_NOIGNORE`.
+
+```c
+#define ERROR_NOIGNORE __attribute__((warn_unused_result))
+```
+
+This will cause a compile-time error if the return value of such a function is not used. "Used" here means assigned to a variable - it does not necessarily mean that the value is checked. However assuming that such functions are called inside of `ATTEMPT { ... }` blocks, it is safe to assume that such returns will be caught with `CATCH(...)`; therefore this error is a generally effective safeguard against careless coding where errors are not checked.
+
+Beware that `ERROR_NOIGNORE` is not a failsafe - users may explicitly ignore an error code from a function marked with `ERROR_NOIGNORE` by explicitly casting the return to `void`.
+
+## Stack Traces
 
 Whenever an error is captured using the `FAIL_*` or `CATCH` methods, and is unhandled such that it manages to propagate all the way to the top of the caller stack without being managed, the last `FINISH` macro to touch the error will trigger a stack trace and kill the program.
 
