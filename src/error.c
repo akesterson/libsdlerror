@@ -5,23 +5,7 @@ ErrorContext __error_last_ditch;
 ErrorContext *__error_last_ignored;
 ErrorUnhandledErrorHandler error_handler_unhandled_error;
 
-char *__ERROR_NAMES[] = {
-  "",
-  "Null Pointer Error",
-  "Out Of Bounds Error",
-  "SDL Library Error",
-  "Attribute Error",
-  "Type Error",
-  "Key Error",
-  "Heap Error",
-  "Index Error",
-  "Format Error",
-  "Input Output Error",
-  "Registry Error",
-  "Value Error",
-  "Behavior Error",
-  "Relationship Error"
-};
+char __ERROR_NAMES[MAX_ERR_VALUE][MAX_ERROR_NAME_LENGTH];
 
 ErrorContext HEAP_ERROR[MAX_HEAP_ERROR];
 
@@ -38,6 +22,23 @@ void error_init()
 	memset((void *)&__error_last_ditch, 0x00, sizeof(ErrorContext));
 	__error_last_ditch.stacktracebufptr = (char *)&__error_last_ditch.stacktracebuf;
 	error_handler_unhandled_error = &error_default_handler_unhandled_error;
+	memset((void *)&__ERROR_NAMES[0], 0x00, ((MAX_ERR_VALUE+1) * MAX_ERROR_NAME_LENGTH));
+
+	error_name_for_status(ERR_NULLPOINTER, "Null Pointer Error");
+	error_name_for_status(ERR_OUTOFBOUNDS, "Out Of Bounds Error");
+	error_name_for_status(ERR_SDL, "SDL Library Error");
+	error_name_for_status(ERR_ATTRIBUTE, "Attribute Error");
+	error_name_for_status(ERR_TYPE, "Type Error");
+	error_name_for_status(ERR_KEY, "Key Error");
+	error_name_for_status(ERR_HEAP, "Heap Error");
+	error_name_for_status(ERR_INDEX, "Index Error");
+	error_name_for_status(ERR_FORMAT, "Format Error");
+	error_name_for_status(ERR_IO, "Input Output Error");
+	error_name_for_status(ERR_REGISTRY, "Registry Error");
+	error_name_for_status(ERR_VALUE, "Value Error");
+	error_name_for_status(ERR_BEHAVIOR, "Behavior Error");
+	error_name_for_status(ERR_RELATIONSHIP, "Relationship Error");
+	
 	inited = 1;
     }
 }
@@ -80,7 +81,16 @@ ErrorContext *heap_release_error(ErrorContext *err)
     return err;
 }
 
-char *error_name_for_status(int status)
+
+// returns or sets the name for the given status.
+// Call with name = NULL to retrieve a status.
+char *error_name_for_status(int status, char *name)
 {
-  return __ERROR_NAMES[status];
+    if ( status > MAX_ERR_VALUE ) {
+	return "Unknown Error";
+    }
+    if ( name != NULL ) {
+	strncpy(&__ERROR_NAMES[status], name, MAX_ERROR_NAME_LENGTH);	
+    }
+    return &__ERROR_NAMES[status];
 }

@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #define MAX_ERROR_CONTEXT_STRING_LENGTH              1024
+#define MAX_ERROR_NAME_LENGTH                        64
 #define MAX_ERROR_FNAME_LENGTH                       256
 #define MAX_ERROR_FUNCTION_LENGTH                    128
 #define MAX_ERROR_STACKTRACE_BUF_LENGTH              2048
@@ -27,7 +28,11 @@
 #define ERR_BEHAVIOR              13
 #define ERR_RELATIONSHIP          14
 
-extern char *__ERROR_NAMES[];
+#ifndef MAX_ERR_VALUE
+#define MAX_ERR_VALUE 14
+#endif
+
+extern char __ERROR_NAMES[MAX_ERR_VALUE][MAX_ERROR_NAME_LENGTH];
 
 #define MAX_HEAP_ERROR                    128
 
@@ -57,12 +62,12 @@ extern ErrorContext *__error_last_ignored;
 
 ErrorContext ERROR_NOIGNORE *heap_release_error(ErrorContext *ptr);
 ErrorContext ERROR_NOIGNORE *heap_next_error();
-char *error_name_for_status(int status);
+char *error_name_for_status(int status, char *name);
 void error_init();
 void error_default_handler_unhandled_error(ErrorContext *ptr);
 
 #define LOG_ERROR_WITH_MESSAGE(__err_context, __err_message)		\
-    SDL_Log("%s%s:%s:%d: %s %d (%s): %s", (char *)&__err_context->stacktracebuf, (char *)__FILE__, (char *)__func__, __LINE__, __err_message, __err_context->status, error_name_for_status(__err_context->status), __err_context->message); \
+    SDL_Log("%s%s:%s:%d: %s %d (%s): %s", (char *)&__err_context->stacktracebuf, (char *)__FILE__, (char *)__func__, __LINE__, __err_message, __err_context->status, error_name_for_status(__err_context->status, NULL), __err_context->message); \
 
 #define LOG_ERROR(__err_context)		\
     LOG_ERROR_WITH_MESSAGE(__err_context, "");
@@ -145,7 +150,7 @@ void error_default_handler_unhandled_error(ErrorContext *ptr);
     snprintf((char *)__err_context->function, MAX_ERROR_FUNCTION_LENGTH, __func__); \
     __err_context->lineno = __LINE__;					\
     snprintf((char *)__err_context->message, MAX_ERROR_CONTEXT_STRING_LENGTH, __message, ## __VA_ARGS__); \
-    __err_context->stacktracebufptr += sprintf(__err_context->stacktracebufptr, "%s:%s:%d: %d (%s) : %s\n", (char *)__err_context->fname, (char *)__err_context->function, __err_context->lineno, __err_context->status, error_name_for_status(__err_context->status), __err_context->message);
+    __err_context->stacktracebufptr += sprintf(__err_context->stacktracebufptr, "%s:%s:%d: %d (%s) : %s\n", (char *)__err_context->fname, (char *)__err_context->function, __err_context->lineno, __err_context->status, error_name_for_status(__err_context->status, NULL), __err_context->message);
 
 
 #define SUCCEED(__err_context)			\

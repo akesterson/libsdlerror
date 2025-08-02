@@ -1,4 +1,4 @@
-#include "error.h"
+#include "sdlerror.h"
 
 ErrorContext *func2(void)
 {
