@@ -197,12 +197,16 @@ FAIL_NONZERO_RETURN(errctx, strcmp("not", "equal"), ERR_VALUE, "Strings are not 
 Any function which returns `ErrorContext *` should also be marked with `ERROR_NOIGNORE`.
 
 ```c
-#define ERROR_NOIGNORE __attribute__((warn_unused_result))
+ErrorContext ERROR_NOIGNORE *f(...);
 ```
 
 This will cause a compile-time error if the return value of such a function is not used. "Used" here means assigned to a variable - it does not necessarily mean that the value is checked. However assuming that such functions are called inside of `ATTEMPT { ... }` blocks, it is safe to assume that such returns will be caught with `CATCH(...)`; therefore this error is a generally effective safeguard against careless coding where errors are not checked.
 
-Beware that `ERROR_NOIGNORE` is not a failsafe - users may explicitly ignore an error code from a function marked with `ERROR_NOIGNORE` by explicitly casting the return to `void`.
+Beware that `ERROR_NOIGNORE` is not a failsafe - it implements the `warn_unused_result` mechanic. By design users may explicitly ignore an error code from a function marked with `warn_unused_result` by explicitly casting the return to `void`.
+
+```c
+#define ERROR_NOIGNORE __attribute__((warn_unused_result))
+```
 
 ## Stack Traces
 
