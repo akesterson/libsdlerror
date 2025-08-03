@@ -5,7 +5,7 @@ ErrorContext __error_last_ditch;
 ErrorContext *__error_last_ignored;
 ErrorUnhandledErrorHandler error_handler_unhandled_error;
 
-char __ERROR_NAMES[MAX_ERR_VALUE][MAX_ERROR_NAME_LENGTH];
+char __ERROR_NAMES[MAX_ERR_VALUE+1][MAX_ERROR_NAME_LENGTH];
 
 ErrorContext HEAP_ERROR[MAX_HEAP_ERROR];
 
@@ -90,7 +90,7 @@ char *error_name_for_status(int status, char *name)
 	return "Unknown Error";
     }
     if ( name != NULL ) {
-	strncpy(&__ERROR_NAMES[status], name, MAX_ERROR_NAME_LENGTH);	
+	strncpy((char *)&__ERROR_NAMES[status], name, MAX_ERROR_NAME_LENGTH);	
     }
-    return &__ERROR_NAMES[status];
+    return (char *)&__ERROR_NAMES[status];
 }

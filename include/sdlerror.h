@@ -32,7 +32,7 @@
 #define MAX_ERR_VALUE 14
 #endif
 
-extern char __ERROR_NAMES[MAX_ERR_VALUE][MAX_ERROR_NAME_LENGTH];
+extern char __ERROR_NAMES[MAX_ERR_VALUE+1][MAX_ERROR_NAME_LENGTH];
 
 #define MAX_HEAP_ERROR                    128
 
