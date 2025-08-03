@@ -1,0 +1,5 @@
+# cmake/MyLibraryConfig.cmake.in
+include(CMakeFindDependencyMacro) # If your library has dependencies
+# find_dependency(AnotherDependency REQUIRED) # Example dependency
+
+include("${CMAKE_CURRENT_LIST_DIR}/sdlerror.cmake")

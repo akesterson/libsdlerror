@@ -10,9 +10,8 @@ This library depends on the `SDL3` library and `stdlib`. Specifically it uses th
 
 ```bash
 cmake -S . -B build
-cd build
-make
-make install
+cmake --build build
+cmake --install build
 ```
 
 # Philosophy of Use
@@ -20,11 +19,46 @@ make install
 This library has 6 guiding principles:
 
 * Manually checking every possible return code for every possible meaning of that return code is tedious and prone to miss unpredicted failure cases
-* Functions should detect errors, declare them, and pass them back to their caller
+* Functions should return rich descriptive error contexts, not values
 * Uncaught errors should cause program termination with a stacktrace
 * Dynamic memory allocation is the source of many errors and should be avoided if possible
 * Manipulating the call stack directly is error prone and dangerous
 * Declaring, capturing, and reacting to errors should be intuitive and no more difficult than managing return codes
+
+# Using the library
+
+## Simply
+
+Include it
+
+```c
+#include <sdlerror.h>
+```
+
+Link against it
+
+```sh
+cc -lsdlerror
+```
+
+.. Done.
+
+## CMake dependencies
+
+Using pkg-config:
+
+```sh
+pkg-config sdlerror --cflags
+pkg-config sdlerror --ldflags
+```
+
+Using cmake:
+
+```cmake
+find_package(sdlerror REQUIRED)
+pkg_check_modules(sdlerror REQUIRED sdlerror)
+target_link_libraries(YOUR_TARGET PRIVATE sdlerror::sdlerror)
+```
 
 # Functions and Return Codes
 
